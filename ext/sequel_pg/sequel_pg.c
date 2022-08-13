@@ -280,7 +280,7 @@ static VALUE read_array(int *index, char *c_pg_array_string, long array_string_l
 
   /* Special case the empty array, so it doesn't need to be handled manually inside
    * the loop. */
-  if(((*index) < array_string_length) && c_pg_array_string[(*index)] == '}') 
+  if(((*index) < array_string_length) && c_pg_array_string[(*index)] == '}')
   {
     return array;
   }
@@ -298,7 +298,7 @@ static VALUE read_array(int *index, char *c_pg_array_string, long array_string_l
           {
             rb_ary_push(array, Qnil);
           }
-          else 
+          else
           {
             word[word_index] = '\0';
             rb_ary_push(array, spg__array_col_value(word, word_index, converter, enc_index, oid, db));
@@ -530,7 +530,7 @@ static VALUE spg_timestamp(const char *s, VALUE self, size_t length, int tz) {
   size_t remaining = length;
 
   if (tz & SPG_DB_CUSTOM || tz & SPG_APP_CUSTOM) {
-    return rb_funcall(rb_funcall(self, spg_id_db, 0), spg_id_to_application_timestamp, 1, rb_str_new2(s)); 
+    return rb_funcall(rb_funcall(self, spg_id_db, 0), spg_id_to_application_timestamp, 1, rb_str_new2(s));
   }
 
   if (remaining < 19) {
@@ -602,7 +602,7 @@ static VALUE spg_timestamp(const char *s, VALUE self, size_t length, int tz) {
   } else {
     return spg_timestamp_error(s, self, "unexpected timestamp format");
   }
-  
+
 
   if (tz & SPG_USE_TIME) {
 #if (RUBY_API_VERSION_MAJOR > 2 || (RUBY_API_VERSION_MAJOR == 2 && RUBY_API_VERSION_MINOR >= 3)) && defined(HAVE_TIMEGM)
@@ -631,7 +631,7 @@ static VALUE spg_timestamp(const char *s, VALUE self, size_t length, int tz) {
           dt = rb_funcall(dt, spg_id_utc, 0);
         } else if (tz & SPG_APP_LOCAL) {
           dt = rb_funcall(dt, spg_id_localtime, 0);
-        } 
+        }
 
         return dt;
       }
@@ -667,7 +667,7 @@ static VALUE spg_timestamp(const char *s, VALUE self, size_t length, int tz) {
 
       if (tz & SPG_APP_UTC) {
         dt = rb_funcall(dt, spg_id_utc, 0);
-      } 
+      }
       return dt;
     } else if (!(tz & (SPG_APP_LOCAL|SPG_DB_LOCAL|SPG_APP_UTC|SPG_DB_UTC))) {
       return rb_funcall(rb_cTime, spg_id_local, 7, INT2NUM(year), INT2NUM(month), INT2NUM(day), INT2NUM(hour), INT2NUM(min), INT2NUM(sec), INT2NUM(usec));
@@ -706,7 +706,7 @@ static VALUE spg_timestamp(const char *s, VALUE self, size_t length, int tz) {
         dt = rb_funcall(dt, spg_id_new_offset, 1, rb_float_new(offset_fraction));
       } else if (tz & SPG_APP_UTC) {
         dt = rb_funcall(dt, spg_id_new_offset, 1, INT2NUM(0));
-      } 
+      }
       return dt;
     } else if (!(tz & (SPG_APP_LOCAL|SPG_DB_LOCAL|SPG_APP_UTC|SPG_DB_UTC))) {
       dt = rb_funcall(spg_DateTime, spg_id_new, 6, INT2NUM(year), INT2NUM(month), INT2NUM(day), INT2NUM(hour), INT2NUM(min), INT2NUM(sec));
@@ -1111,7 +1111,7 @@ static VALUE spg__col_value(VALUE self, PGresult *res, int i, int j, VALUE* colc
       case 1041:
       case 651:
         switch(ftype) {
-          case 1009: 
+          case 1009:
           case 1014:
             array_type = spg_sym_text;
             scalar_oid = 25;
@@ -1244,7 +1244,7 @@ static VALUE spg__col_value(VALUE self, PGresult *res, int i, int j, VALUE* colc
         rv = rb_tainted_str_new(v, PQgetlength(res, i, j));
         PG_ENCODING_SET_NOCHECK(rv, enc_index);
         if (colconvert[j] != Qnil) {
-          rv = rb_funcall(colconvert[j], spg_id_call, 1, rv); 
+          rv = rb_funcall(colconvert[j], spg_id_call, 1, rv);
         }
     }
   }
@@ -1449,11 +1449,11 @@ static VALUE spg_yield_hash_rows_internal(VALUE self, PGresult *res, int enc_ind
       if (j == -1) {
         for(i=0; i<ntuples; i++) {
           rb_yield(Qnil);
-        } 
+        }
       } else {
         for(i=0; i<ntuples; i++) {
           rb_yield(spg__col_value(self, res, i, j, colconvert, enc_index));
-        } 
+        }
       }
       break;
     case SPG_YIELD_COLUMNS:
@@ -1461,13 +1461,13 @@ static VALUE spg_yield_hash_rows_internal(VALUE self, PGresult *res, int enc_ind
       h = spg__field_ids(pg_value, colsyms, nfields);
       for(i=0; i<ntuples; i++) {
         rb_yield(spg__col_values(self, h, colsyms, nfields, res, i, colconvert, enc_index));
-      } 
+      }
       break;
     case SPG_YIELD_FIRST:
       /* First column */
       for(i=0; i<ntuples; i++) {
         rb_yield(spg__col_value(self, res, i, 0, colconvert, enc_index));
-      } 
+      }
       break;
     case SPG_YIELD_ARRAY:
       /* Array of all columns */
@@ -1477,7 +1477,7 @@ static VALUE spg_yield_hash_rows_internal(VALUE self, PGresult *res, int enc_ind
           rb_ary_store(h, j, spg__col_value(self, res, i, j, colconvert, enc_index));
         }
         rb_yield(h);
-      } 
+      }
       break;
     case SPG_YIELD_KV_HASH:
     case SPG_YIELD_KV_HASH_GROUPS:
@@ -1490,7 +1490,7 @@ static VALUE spg_yield_hash_rows_internal(VALUE self, PGresult *res, int enc_ind
         if(type == SPG_YIELD_KV_HASH) {
           for(i=0; i<ntuples; i++) {
             rb_hash_aset(h, spg__col_value(self, res, i, k, colconvert, enc_index), spg__col_value(self, res, i, v, colconvert, enc_index));
-          } 
+          }
         } else {
           VALUE kv, vv, a;
           for(i=0; i<ntuples; i++) {
@@ -1502,7 +1502,7 @@ static VALUE spg_yield_hash_rows_internal(VALUE self, PGresult *res, int enc_ind
             } else {
               rb_ary_push(a, vv);
             }
-          } 
+          }
         }
         rb_yield(h);
       }
@@ -1519,7 +1519,7 @@ static VALUE spg_yield_hash_rows_internal(VALUE self, PGresult *res, int enc_ind
         if(type == SPG_YIELD_MKV_HASH) {
           for(i=0; i<ntuples; i++) {
             rb_hash_aset(h, spg__col_values(self, k, colsyms, nfields, res, i, colconvert, enc_index), spg__col_value(self, res, i, v, colconvert, enc_index));
-          } 
+          }
         } else {
           VALUE kv, vv, a;
           for(i=0; i<ntuples; i++) {
@@ -1531,7 +1531,7 @@ static VALUE spg_yield_hash_rows_internal(VALUE self, PGresult *res, int enc_ind
             } else {
               rb_ary_push(a, vv);
             }
-          } 
+          }
         }
         rb_yield(h);
       }
@@ -1548,7 +1548,7 @@ static VALUE spg_yield_hash_rows_internal(VALUE self, PGresult *res, int enc_ind
         if(type == SPG_YIELD_KMV_HASH) {
           for(i=0; i<ntuples; i++) {
             rb_hash_aset(h, spg__col_value(self, res, i, k, colconvert, enc_index), spg__col_values(self, v, colsyms, nfields, res, i, colconvert, enc_index));
-          } 
+          }
         } else {
           VALUE kv, vv, a;
           for(i=0; i<ntuples; i++) {
@@ -1560,7 +1560,7 @@ static VALUE spg_yield_hash_rows_internal(VALUE self, PGresult *res, int enc_ind
             } else {
               rb_ary_push(a, vv);
             }
-          } 
+          }
         }
         rb_yield(h);
       }
@@ -1576,7 +1576,7 @@ static VALUE spg_yield_hash_rows_internal(VALUE self, PGresult *res, int enc_ind
         if(type == SPG_YIELD_MKMV_HASH) {
           for(i=0; i<ntuples; i++) {
             rb_hash_aset(h, spg__col_values(self, k, colsyms, nfields, res, i, colconvert, enc_index), spg__col_values(self, v, colsyms, nfields, res, i, colconvert, enc_index));
-          } 
+          }
         } else {
           VALUE kv, vv, a;
           for(i=0; i<ntuples; i++) {
@@ -1588,7 +1588,7 @@ static VALUE spg_yield_hash_rows_internal(VALUE self, PGresult *res, int enc_ind
             } else {
               rb_ary_push(a, vv);
             }
-          } 
+          }
         }
         rb_yield(h);
       }
@@ -1692,6 +1692,7 @@ static void spg__yield_each_row_stream(VALUE rres, int ntuples, int nfields, voi
     rb_yield(model);
   } else {
     rb_yield(h);
+    PQclear(res);
   }
 }
 
@@ -1728,7 +1729,7 @@ static VALUE spg__yield_each_row_internal(VALUE self, VALUE rconn, VALUE rres, P
     data.pg_value = pg_value;
     data.enc_index = enc_index;
     data.type = type;
-    
+
     pgresult_stream_any(rres, spg__yield_each_row_stream, &data);
     return self;
   }
@@ -1827,7 +1828,7 @@ static VALUE spg__flush_results(VALUE rconn) {
     }
     PQclear(res);
   }
-  
+
   if (error) {
     VALUE exception = rb_exc_new3(spg_PGError, error);
     rb_iv_set(exception, "@connection", rconn);
@@ -1954,15 +1955,15 @@ void Init_sequel_pg(void) {
   spg_sym_inet = ID2SYM(rb_intern("inet"));
   spg_sym_cidr = ID2SYM(rb_intern("cidr"));
 
-  spg_Blob = rb_const_get(rb_const_get(spg_Sequel, rb_intern("SQL")), rb_intern("Blob")); 
+  spg_Blob = rb_const_get(rb_const_get(spg_Sequel, rb_intern("SQL")), rb_intern("Blob"));
   rb_gc_register_mark_object(spg_Blob);
   spg_Blob_instance = rb_obj_freeze(rb_funcall(spg_Blob, spg_id_new, 0));
   rb_gc_register_mark_object(spg_Blob_instance);
-  spg_SQLTime = rb_const_get(spg_Sequel, rb_intern("SQLTime")); 
+  spg_SQLTime = rb_const_get(spg_Sequel, rb_intern("SQLTime"));
   rb_gc_register_mark_object(spg_SQLTime);
-  spg_Date = rb_const_get(rb_cObject, rb_intern("Date")); 
+  spg_Date = rb_const_get(rb_cObject, rb_intern("Date"));
   rb_gc_register_mark_object(spg_Date);
-  spg_DateTime = rb_const_get(rb_cObject, rb_intern("DateTime")); 
+  spg_DateTime = rb_const_get(rb_cObject, rb_intern("DateTime"));
   rb_gc_register_mark_object(spg_DateTime);
   spg_PGError = rb_const_get(rb_const_get(rb_cObject, rb_intern("PG")), rb_intern("Error"));
   rb_gc_register_mark_object(spg_PGError);
